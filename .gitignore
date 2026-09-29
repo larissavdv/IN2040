@@ -1,0 +1,5 @@
+# Dr Racket temp files
+*.scm~
+
+# annoying MacOS thing ...
+.DS_Store
