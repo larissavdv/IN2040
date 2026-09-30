@@ -86,7 +86,7 @@
 
 ;2f)
 
-(define (make-freq leaf)
+(define (make-freq leaf) ;;helper procedure to make a list of symbol + weight
   (list (symbol-leaf leaf)(weight-leaf leaf)))
 
 (define (huffman-leaves tree)
