@@ -1,0 +1,11 @@
+;;Group members: Alexandra Ruud, Brian ... Larissa van der Velpen
+
+;;load "huffman.scm"
+
+(define foo 42)
+
+(let ((foo 5)
+(x foo))
+(if (= x foo)
+'same
+'different))
