@@ -1,110 +1,114 @@
-;;Group members: 
+;;Alexandra Josephine Ruud (alexajru), Larissa van der Velpen (ljvelpen), Daniel Ryan Burch (danierb)
+
+;;Oppgave 1
+
+;;(a)
+
+(define (p-cons x y)
+  (lambda (proc) (proc x y)))
+
+(define (p-car proc)
+  (proc (lambda (x y)
+    x)))
+
+(define (p-cdr proc)
+  (proc (lambda (x y)
+    y)))
+        
+(p-car (p-cons "foo" "bar"))
+
+(p-cdr (p-cons "foo" "bar"))
+
+(p-car (p-cdr (p-cons "zoo" (p-cons "foo" "bar"))))
+
+;;(b)
+
+(define foo 42)
+
+((lambda (foo x)
+  (if (= x foo)
+      'same
+      'different))
+  5 foo)
+
+;;first lambda: var1 = bar, var2 = baz | second lambda: var1 = bar, var2 = foo
+;;first lambda: exp1 = foo, exp2 = 'towel | second lambda: exp1 = (list bar baz), exp2 = baz
 
 
+((lambda (bar baz)
+   ((lambda (bar foo)
+     (list foo bar))
+   (list bar baz) baz))
+ foo 'towel)
 
+;;(c)
 
-;; Import ;;
+(define (infix-eval exp)
+  (let ((x (car exp))
+        (y (cadr exp))
+        (z (caddr exp)))
+    (y x z)))
+
+(define foo (list 21 + 21))
+(define baz (list 21 list 21))
+(define bar (list 84 / 2))
+
+(infix-eval foo)
+(infix-eval baz)
+(infix-eval bar)
+
+;;(d)
+;(define bah ’(84 / 2))
+;;(infix-eval bah)
+;;The reason that this gives an error is because, with the quotation, the forward slash
+;;no longer reads as an operand, but is rather interpreted as a (STRING)???. Within the
+;;parentheses expects y to be a procedure and instead it gets a (STRING).
+
+;;Oppgave 2
+
+;;(a)
 (load "huffman.scm")
 
-;; Unit Test
-(define (test result expected)
-  (cond ((not (equal? expected result))
-         (begin
-           (display "Result: ")
-           (display result)
-           (display " -- Expected: ")
-           (display expected)
-           (newline)))))
+(define (decode bits tree)
+  (define (decode-tail bits current-branch result)
+    (if (null? bits)
+        (reverse result)
+        (let ((next-branch (choose-branch (car bits) current-branch)))
+          (if (leaf? next-branch)
+              (decode-tail (cdr bits) tree (cons (symbol-leaf next-branch) result))
+              (decode-tail (cdr bits) next-branch result)))))
+  (decode-tail bits tree '()))
+             
+(decode sample-code sample-tree)
 
+;;(b)
+;;(samurais fight ninjas by night)
 
-;; 2.c
+;;(c)
 
-;; Helper to check if a branch contains a symbol
-(define (branch-contains? branch symbol)
-  (define (br-con-helper symbol-list)
-    (cond
-      ((null? symbol-list) #f)
-      ((eq? (car symbol-list) symbol) #t)
-      (else (br-con-helper (cdr symbol-list)))))
-  (if (leaf? branch)
-      (eq? (cadr branch) symbol)
-      (br-con-helper (caddr branch))))
-
-;; Main encode
 (define (encode symbols tree)
-  (define (encode-helper symbols branch bits)
-    (cond
-      ((null? symbols) (reverse bits))
-      ((leaf? branch) (encode-helper (cdr symbols) tree bits))
-      ((branch-contains? (left-branch branch) (car symbols))
-       (encode-helper symbols (left-branch branch) (cons 0 bits)))
-      (else (encode-helper symbols (right-branch branch) (cons 1 bits)))))
-  (encode-helper symbols tree '() ))
-
-;; Test
-(test
- (encode '(ninjas fight ninjas) sample-tree)
- '(0 1 0 0 0 1) )
-(test
- (decode (encode '(ninjas fight ninjas) sample-tree) sample-tree)
- '(ninjas fight ninjas) )
+  
+  (define (encode-symbol symbol tree)
+    (if (
 
 
-;; 2.d
-(define (grow-huffman-tree freqs-pairs)
-  ;; assuming I don't need to guard against empty list
-  (let ((nodes (make-leaf-set freqs-pairs)))
-    (define (grow-helper)
-      (if (= (length nodes) 1)
-          (car nodes)
-          (begin
-            (set! nodes
-                  (adjoin-set
-                   (make-code-tree (car nodes) (cadr nodes))
-                   (cddr nodes)))
-            (grow-helper))))
-    (grow-helper)))
-
-;; Test
-(define freqs '((a 2) (b 5) (c 1) (d 3) (e 1) (f 3)))
-(define codebook (grow-huffman-tree freqs))
-(test (decode (encode '(a b c) codebook) codebook) '(a b c))
-(test (grow-huffman-tree '((x 10)) ) '(leaf x 10)) ; case of just a leaf
-
-;; 2.e
-#|
-TODO
-|#
 
 
-;; Print Debug
-(define anime-tree
-  (grow-huffman-tree 
-   '( (samurais 57) (ninjas 20) (fight 45) (night 12) (hide 3) (in 2)
-                    (ambush 2) (defeat 1) (the 5) (sword 4) (by 12)
-                    (assassin 1) (river 2) (forest 1) (wait 1) (poison 1) )))
-
-(define message '( ninjas ambush samurais in the poison assassin forest ) )
-(display (encode message anime-tree))
-(newline)
-
-(display (decode (encode message anime-tree) anime-tree) )
-(newline)
-
-;; Test
-(test (decode (encode message anime-tree) anime-tree) message)
 
 
-;; 2.f
-;; TODO
-(define (huffman-leaves tree) 0)
+    
+  (define (encode-help symbols tree path results)
+    (if (null? symbols)
+        result
+        (let ((left (left-branch tree))
+              (right (right-branch tree)))
+          (cond ((leaf? left) (encode-help (cdr symbols) tree '() (append (append 0 path) result))
+                (leaf? right) (encode-help (cdr symbols) tree '() (append (append 1 path) result))
+                
+                
+                
+                   
+                      
+    
 
-;; Test
-;(test
-; (huffman-leaves sample-tree)
-; '((fight 6) (ninjas 5) (samurais 4) (night 2) (by 1)))
-
-;; End Confirmation
-(newline)
-(display "all good")
 
