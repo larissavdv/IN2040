@@ -28,28 +28,37 @@ count    ;; 42
 
 ;;Oppgave 2
 
-;; NB NB NB!!  We did not finish this one yet
-;; in the gruppetime on tuesday 6th october they gave us code for this. We can look at that on wednesday 
+(define (make-stack elements)
+  (let ((stack elements))
+    (define (push! lst)                ;;helper method to add every item to the stack in args 
+      (cond ((not(null? lst))
+             (set! stack (cons (car lst) stack))
+             (push! (cdr lst)))))
 
-(define (make-stack init) 
-  (let ((stack (if (null? init) (cons '() '()) init)))
-    (define (pop!)
-      (set! stack (cdr stack)))  ;;NOTE TO SELF: Se mer på hvorfor man ikke kan bruke set-car! her 
-    (define (push! . args)
-      (define (recurse list)
-        (if (null? list)
-            '()
-            (cons(car list)
-                 (recurse (cdr list)))))
-      (recurse args))
-    (lambda (msg)
-      (cond ((eq? msg 'pop!) (pop!)) 
-            ((eq? msg 'push!) (push! args))
-            ((eq? msg 'stack) stack)))))
+    (define (dispatch msg . args)
+      (cond ((eq? msg 'push!)
+             (push! args))
+            ((eq? msg 'pop!)
+             (if (not (null? stack))
+                 (set! stack (cdr stack))))
+            ((eq? msg 'stack) stack)))
+    dispatch))
 
 (define s1 (make-stack (list 'foo 'bar)))
 (define s2 (make-stack '()))
 
-"Oppgave 2 a"
+"Daniels kode"
+
+(define s1 (make-stack (list 'foo 'bar)))
+(define s2 (make-stack '()))
 (s1 'pop!)
-(s1 'stack)
+(s1 'stack) ;; (bar)
+(s2 'pop!) ;; popper en tom stack
+(s2 'push! 1 2 3 4)
+(s2 'stack) ;;(4 3 2 1)
+(s1 'push! 'bah)
+(s1 'push! 'zap 'zip 'baz)
+(s1 'stack) ;; (baz zip zap bah bar)
+
+
+
