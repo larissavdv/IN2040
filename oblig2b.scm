@@ -8,7 +8,7 @@
       (set! count (+ count 1))
       count)))
 
-"Calls for task 1a"
+"Calls for task 1a"  ;;We want this to print to the REPL
 
 (define count 42)
 (define c1 (make-counter))
@@ -85,12 +85,12 @@ count    ;; 42
 
 ;c)
 
-(define (cycle? lst)
-  (define (recurse my-list seen)
+(define (cycle? my-list)
+  (define (recurse rest seen)
     (cond ((null? rest) #f)
           ((memq rest seen) #t)
-          (else (iter (cdr rest) (cons rest seen)))))
-  (iter lst '()))
+          (else (recurse (cdr rest) (cons rest seen)))))
+  (recurse my-list '()))
 
           
 "Calls for task 3c"
