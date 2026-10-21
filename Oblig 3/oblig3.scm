@@ -33,41 +33,106 @@
              (if (not (lookup proc table))
                  proc
              (lookup proc table)))))))
-      
-(display "REGULAR FIB")
-(newline)
-(fib 3)
 
-(display "**MEMOIZE FIB**")
+
+
+(display "*MEMOIZE fib**")
+(newline)
+(display "---------------")
 (newline)
 
 (set! fib (mem 'memoize fib))
 (fib 3)
+;;computing fib of 3
+;;computing fib of 2
+;;computing fib of 1
+;;computing fib of 0
+;;2
+
 (fib 3)
+;;2
+(fib 2)
+;;1
 (fib 4)
-
+;;computing fib of 4
+;;3
 
 
 (newline)
-(display "**UNMEMOIZE FIB**")
+(display "*MEMOIZE fac*")
 (newline)
+(display "---------------")
+(newline)
+
+(set! fac (mem 'memoize fac))
+(fac 3)
+;;computing fac of 3
+;;computing fac of 2
+;;computing fac of 1
+;;6
+(fac 3)
+;;6
+
+
+(newline)
+(display "*UNMEMOIZE fib*")
+(newline)
+(display "---------------")
+(newline)
+
+
 (set! fib (mem 'unmemoize fib))
 (fib 3)
-(fib 3)
+;;computing fib of 3
+;;computing fib of 2
+;;computing fib of 1
+;;computing fib of 0
+;;computing fib of 1
+;;2
+
 
 (newline)
+(display "*UNMEMOIZE fac*")
 (newline)
-(display "**MEMOIZE TEST-PROC**")
+(display "---------------")
 (newline)
+
+(set! fac (mem 'unmemoize fac))
+(fac 3)
+;;computing fac of 3
+;;computing fac of 2
+;computing fac of 1
+;;6
+
+
+
+
+(newline)
+(display "*MEMOIZE TEST-PROC*")
+(newline)
+(display "-------------------")
+(newline)
+
 (set! test-proc (mem 'memoize test-proc))
 (test-proc)
+;;computing test-proc of ()
+;;0
 (test-proc)
+;;0
 (test-proc 40 41 42 43 44)
+;;computing test-proc of (40 41 42 43 44)
+;;computing test-proc of (41 42 43 44)
+;;computing test-proc of (42 43 44)
+;;computing test-proc of (43 44)
+;;computing test-proc of (44)
+;;10
+(test-proc 40 41 42 43 44)
+;;10
 (test-proc 42 43 44)
-(test-proc 40 41 42)
+;;5
 
 
-;;c
+;; Task 1 c
 
 ;; The reason it does not behave as expected is because we are not changing the
 ;; binding for fib with set!. That means that when we call memo-fib, the table
