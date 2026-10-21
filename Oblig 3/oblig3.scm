@@ -135,13 +135,13 @@
 ;; Task 1 c
 
 ;; The reason it does not behave as expected is because we are not changing the
-;; binding for fib with set!. That means that when we call memo-fib, the table
-;; is created and the first call is stored, but when we actually enter the 
-;; recursive calls inside of memo-fib, the recursive calls will still
-;; point to the originial fib. Set! is destructive, and thereby changes the
-;; binding of fib to the memoized version of fib. In this example however,
-;; we have just created a new pointer to the memoized version of fib, but
-;; fib itself is not changed, which again is why the recursive calls will
-;; call the unmemoized fib and not memo-fib. 
-
+;; binding for fib with set!. When we call memo-fib, the call and result are
+;; actually stored in the table, because the first call is on the memoized
+;; version. This is why when we do the same call again it is able to return the
+;; value instantly. But when we actually enter the recursive calls inside of
+;; memo-fib, the recursive calls will still point to the originial fib. Set! is
+;; destructive, and thereby changes the binding of fib to the memoized version
+;; of fib. In this example however, we have just created a new pointer to the
+;; memoized version of fib, but fib itself is not changed, which again is why
+;; the recursive calls will call the unmemoized fib and not memo-fib. 
 
