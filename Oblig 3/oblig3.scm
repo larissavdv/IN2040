@@ -48,9 +48,9 @@
 
 ;; 'unmemoize:
 ;; If proc is a key in the table, it means it is memoized, and we return the
-;; original procedere that is associated with that key. If not proc is not a
+;; original procedere that is associated with that key. If proc is not a
 ;; key in mem-table, that means it is not memoized, so we return it unchanged.
-;; This is done in case someone calls 'unmemoize on a regual procedure. 
+;; This is done in case someone calls 'unmemoize on a regular procedure. 
 
 
 (define mem
@@ -65,9 +65,9 @@
                      mem-proc))))
             ((eq? msg 'unmemoize)
              (let ((result (lookup proc mem-table)))
-               (if (not result)
-                   proc
-                   result)))))))
+               (if result
+                   result
+                   proc)))))))
 
 
 
@@ -190,12 +190,41 @@
 ;; Task 2
 ;; a)
 
-;; list-to-stream:
+;; list-to-stream
+
+(define (list-to-stream list-in)
+  (define (build-stream lst stream-out) ;; helper method
+    (if (null? lst)
+        stream-out
+        (build-stream (cdr lst) (cons-stream (car lst) stream-out))))
+  (build-stream (reverse list-in) the-empty-stream))
+;; reversing the list we take in makes building the stream in the right
+;; order much easier
 
 
-;; stream-to-list:
+;; stream-to-list
+
+;; If the user calls stream-to-list with arguments, then n will be a list
+;; containing this argument (for example (5)). But if it is called without an
+;; argument then n will be the empty list '().
+
+;; This is why we have an if check inside the (build ...) call, checking if n is
+;; not null. If so, we can send in (car n) for counter, otherwise we can send
+;; in #f.
+
+;; This is also why we have to use equal? instead of = in the base case, because,
+;; counter can either be a number or #f.
 
 
+(define (stream-to-list stream-in . n)
+
+  (define (build strm list-out counter) ;;helper method
+    (if (or (stream-null? strm) (equal? 0 counter)) 
+        (reverse list-out)
+        (build (stream-cdr strm)(cons (stream-car strm) list-out)
+               (if counter (- counter 1) counter))))
+  
+  (build stream-in '() (if (not (null? n)) (car n) #f)))
 
      
 (newline)
@@ -205,12 +234,12 @@
 (newline)
 (newline)
 
-(display "*list-to-steam*")
+(display "(list-to-steam '(1 2 3 4 5))")
 (newline)
-(display "---------------")
+(display "----------------------------")
 (newline)
 
-;(list-to-stream '(1 2 3 4 5))
+(list-to-stream '(1 2 3))
 ;;(1 . #<promise>)
 
 (newline)
@@ -219,71 +248,96 @@
 (display "----------------------------------")
 (newline)
 
-;(stream-to-list (stream-interval 10 20))
+(stream-to-list (stream-interval 10 20))
 ;;(10 11 12 13 14 15 16 17 18 19 20)
-(newline)
 
-(display "*show stream nats 15*")
+(newline)
+(display "(show-stream nats 15)")
 (newline)
 (display "---------------------")
 (newline)
 
-;(show-stream nats 15)
+(show-stream nats 15)
 ;;1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ...
-(newline)
 
+(newline)
 (display "*stream-to-list with arguments*")
 (newline)
 (display "-------------------------------")
 (newline)
 
-;(stream-to-list nats 10)
+(stream-to-list nats 10)
 ;;(1 2 3 4 5 6 7 8 9 10)
-(newline)
+
 
 
 ;;b)
 
+;; No helper method here, we are building the cons-stream recursively instead
+;; of iteratively (with tail recursion like earlier), so we don't have to
+;; reverse the stream (we can't use (reverse ..) on streams). 
 
-(display "*stream-take*")
+(define (stream-take n stream-in)
+  (if (or (= n 0) (stream-null? stream-in))
+      the-empty-stream
+      (cons-stream (stream-car stream-in) (stream-take (- n 1) (stream-cdr stream-in)))))
+
 (newline)
-(display "-------------")
+(display "(stream-take 10 nats)")
+(newline)
+(display "---------------------")
 (newline)
 
-;(define foo (stream-take 10 nats))
-;foo
+(define foo (stream-take 10 nats))
+foo
 ;;(1 . #<promise>)
 
 (newline)
-(display "*show stream x2*")
+(display "* show stream x2 *")
 (newline)
-(display "----------------")
+(display "------------------")
 (newline)
 
-;(show-stream foo 5)
+(show-stream foo 5)
 ;;1 2 3 4 5 ...
-;(show-stream foo 20)
+(show-stream foo 20)
 ;;1 2 3 4 5 6 7 8 9 10
 
 (newline)
-(display "*show-stream (stream-take 15 nat) 10*")
+(display "(show-stream (stream-take 15 nat) 10)")
 (newline)
 (display "-------------------------------------")
 (newline)
 
-;(show-stream (stream-take 15 nats) 10)
+(show-stream (stream-take 15 nats) 10)
 ;;1 2 3 4 5 6 7 8 9 10 ...
 
 
 ;;c)
 
+;; For det første: det er en liten feil i koden. Første kond sier hvis listen
+;; er null, så returnerer vi null, men dette finnes visst ikke i vår scheme, så
+;; den må erstattes med '().
 
+;; Jeg tror problemet ligger i at memq potensielt må iterere over hele listen
+;; (elementet vi leter etter kan tross alt være i slutten av listen)
+;; men streams kan jo strengt tatt være uendelige, og da får vi at memq havner
+;; i en uendelig løkke.
 
 ;;d)
 
 
+;;måtte se på sieve i boka 
 
-
+(define (remove-duplicates stream)
+  (if (stream-null? stream)
+      the-empty-stream
+      
+      (cons-stream (stream-car stream)
+                   (remove-duplicates
+                    (stream-filter (lambda(x)(not(eq? x (stream-car stream))))
+                     (stream-cdr stream))))))
+                  
 
 (newline)
 (display "*TESTING d)*")
@@ -291,8 +345,8 @@
 (display "---------------")
 (newline)
 
-;;(define mystream (list-to-stream '(1 2 2 3 2 1)))
-;;(show-stream mystream)
-;;(show-stream (remove-duplicates mystream))
+(define mystream (list-to-stream '(1 2 2 3 2 1)))
+(show-stream mystream)
+(show-stream (remove-duplicates mystream))
 
 
