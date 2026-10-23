@@ -57,16 +57,16 @@
   (let ((mem-table (make-table)))
     (lambda (msg proc)
       (cond ((eq? msg 'memoize)
-             (let ((result (lookup proc mem-table)))
-               (if result
+             (let ((memoized (lookup proc mem-table)))
+               (if memoized 
                    proc     
                    (let ((mem-proc (memoize proc)))
                      (insert! mem-proc proc mem-table)
                      mem-proc))))
             ((eq? msg 'unmemoize)
-             (let ((result (lookup proc mem-table)))
-               (if result
-                   result
+             (let ((unmemoized (lookup proc mem-table)))
+               (if unmemoized 
+                   unmemoized
                    proc)))))))
 
 
